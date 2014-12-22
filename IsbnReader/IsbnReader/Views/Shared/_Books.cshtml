@@ -1,0 +1,31 @@
+﻿@model IList<IsbnReader.ViewModels.BookViewModel>
+
+@if (Model != null && Model.Any())
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        var book = Model[i];
+        //creating rows for every 4 elements
+        bool newRow = (i + 1) % 4 == 0;
+            
+        if (newRow)
+        {
+            @Html.Raw("<div class='row'>")
+        }
+        <div class="col-md-3">
+            <div class="thumbnail">
+                <img src="@book.ImageUrl" alt="@book.Title">
+                @Html.CheckBoxFor(model => book.IsRead, new { @class = "book-checkbox", data_isbn = book.Isbn })
+                @*<input type="checkbox" class="book-checkbox" />*@
+                <div class="caption">
+                    <h3>@book.Title</h3>
+                </div>
+            </div>
+        </div>
+
+        if (newRow)
+        {
+            @Html.Raw("</div>")
+        }
+    }
+}
