@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Services.Books
+namespace Services.Books.Models
 {
     public class IsbnBook
     {
@@ -12,5 +13,11 @@ namespace Services.Books
 
         [JsonProperty("imageurl")]
         public string ImageUrl { get; set; }
+
+        [JsonProperty("url")]
+        public string Url { get; set; }
+
+        [JsonProperty("contributors")]
+        public IList<BookAuthor> Authors { get; set; }
     }
 }

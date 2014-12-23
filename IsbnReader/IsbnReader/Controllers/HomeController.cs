@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Data.Models;
 using IsbnReader.ViewModels;
 using Services.Books;
+using Services.Books.Models;
 
 namespace IsbnReader.Controllers
 {
@@ -25,7 +26,6 @@ namespace IsbnReader.Controllers
         }
         #endregion
 
-        // GET: Home
         public ActionResult Index()
         {
             return View(new IndexViewModel());
@@ -43,6 +43,7 @@ namespace IsbnReader.Controllers
             var allIsbns = isbns.Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             var parsedIsbns = new List<long>(allIsbns.Length);
             var invalidIsbns = new List<string>();
+            string errorMessage = string.Empty;
 
             foreach (var isbn in allIsbns)
             {
@@ -60,28 +61,54 @@ namespace IsbnReader.Controllers
 
             if (!parsedIsbns.Any())
             {
-                return PartialView("_Books", new List<BookViewModel>());
+                return PartialView("_Books", new BooksViewModel{ErrorMessage = "No valid ISBNs were found"});
             }
 
-            IEnumerable<Task<IsbnBook>> tasks = parsedIsbns.Select(s => _isbnService.Get(s));
+            var existingTask = _bookService.GetAsync(parsedIsbns);
 
-            var existing = (List<Book>)(await _bookService.GetAsync(parsedIsbns));
-            var newBooks = parsedIsbns.Except(existing.Select(s => s.Isbn)).Select(s => new Book {Isbn = s, IsRead = false}).ToList();
-            _bookService.AddAsync(newBooks);
+            IList<IsbnBook> bookInformation = new List<IsbnBook>();
+            IList<Book> existing = new List<Book>();
+            
+            try
+            {
+                //getting all book information
+                bookInformation = await _isbnService.Get(parsedIsbns);
 
-            existing.AddRange(newBooks);
+                existing = await existingTask;
 
-            IsbnBook[] bookResult = await Task.WhenAll(tasks);
+                var nonexistingIsbns = parsedIsbns.Except(existing.Select(book => book.Isbn)).Select(isbn => (isbn)).ToList();
 
-            var model = bookResult.Where(w => w != null)
-                .Join(existing, sel => sel.Isbn, inner => inner.Isbn, (isbnBook, book) => new { isbnBook, book })
-                .Select(s => new BookViewModel
+                if (nonexistingIsbns.Any())
                 {
-                    ImageUrl = s.isbnBook.ImageUrl,
-                    Title = s.isbnBook.Title,
-                    Isbn = s.isbnBook.Isbn,
-                    IsRead = s.book.IsRead
-                }).ToList();
+                    var newBooks = bookInformation.Where(w => nonexistingIsbns.Contains(w.Isbn))
+                    .Select(info => new Book { IsRead = false, Isbn = info.Isbn }).ToList();
+
+                    await _bookService.AddAsync(newBooks);
+                }
+            }
+            catch (Exception e)
+            {
+                errorMessage = e.Message;
+            }
+
+            var books =(from bookInfo in bookInformation
+                        join exist in existing on bookInfo.Isbn equals exist.Isbn into existingBooks
+                        from existingBook in existingBooks.DefaultIfEmpty()
+                        select new BookViewModel
+                        {
+                            Authors = bookInfo.Authors,
+                            ImageUrl = bookInfo.ImageUrl,
+                            Isbn = bookInfo.Isbn,
+                            Title = bookInfo.Title,
+                            Url = bookInfo.Url,
+                            IsRead = existingBook != null && existingBook.IsRead
+                        }).ToList();
+
+            var model = new BooksViewModel
+            {
+                Books = books,
+                ErrorMessage = errorMessage
+            }; 
 
             return PartialView("_Books", model);
         }

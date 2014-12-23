@@ -7,7 +7,8 @@ namespace Services.Books
     public interface IBookService
     {
         Task<bool> ReadAsync(long isbn, bool read);
-        void AddAsync(IList<Book> books);
+        Task<bool> AddAsync(IList<Book> books);
         Task<IList<Book>> GetAsync(IEnumerable<long> isbns);
+        Task<IList<Book>> GetAsync();
     }
 }

@@ -51,6 +51,14 @@
     <Compile Include="Migrations\201412221258306_Added books.Designer.cs">
       <DependentUpon>201412221258306_Added books.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201412222225441_added more book fields.cs" />
+    <Compile Include="Migrations\201412222225441_added more book fields.Designer.cs">
+      <DependentUpon>201412222225441_added more book fields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412231240586_Removed fields.cs" />
+    <Compile Include="Migrations\201412231240586_Removed fields.Designer.cs">
+      <DependentUpon>201412231240586_Removed fields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Book.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,6 +70,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201412221258306_Added books.resx">
       <DependentUpon>201412221258306_Added books.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412222225441_added more book fields.resx">
+      <DependentUpon>201412222225441_added more book fields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412231240586_Removed fields.resx">
+      <DependentUpon>201412231240586_Removed fields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

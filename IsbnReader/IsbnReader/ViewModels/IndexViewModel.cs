@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Data.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace IsbnReader.ViewModels
 {
@@ -7,8 +6,11 @@ namespace IsbnReader.ViewModels
     {
         public IndexViewModel()
         {
-            Books = new List<BookViewModel>();
+            Books = new BooksViewModel();
         }
-        public IList<BookViewModel> Books { get; set; }
+        public BooksViewModel Books { get; set; }
+
+        [Required]
+        public string Isbns { get; set; }
     }
 }

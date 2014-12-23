@@ -7,7 +7,7 @@ namespace IsbnReader
         public static void Register(BundleCollection bundle)
         {
             bundle.Add(new ScriptBundle("~/js")
-                .Include("~/Scripts/jquery-*")
+                .Include("~/Scripts/jquery*")
                 .Include("~/Scripts/core.js")
                 );
 
@@ -15,6 +15,8 @@ namespace IsbnReader
                 .Include("~/Content/bootstrap*")
                 .Include("~/Content/Site*")
                 );
+
+            BundleTable.EnableOptimizations = true;
         }
     }
 }

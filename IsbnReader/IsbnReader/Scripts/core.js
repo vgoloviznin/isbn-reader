@@ -1,20 +1,30 @@
 ﻿(function($) {
     $(function () {
-        $('#isbn-form').on('submit', function (e) {
+        var form = $('#isbn-form');
+        form.on('submit', function (e) {
             e.preventDefault();
 
-            var data = $(this).serialize();
+            if (form.valid()) {
+                var data = $(this).serialize();
 
-            $.ajax({
-                url: '/home/books',
-                type: 'POST',
-                data: data,
-                success: function(result) {
-                    if (result) {
-                        $('.books-result').html(result);
+                form.find(':input:not(:disabled)').prop('disabled', true);
+
+                $.ajax({
+                    url: '/home/books',
+                    type: 'POST',
+                    data: data,
+                    success: function (result) {
+                        if (result) {
+                            $('.books-result').html(result);
+                            form.find(':input:disabled').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        form.find(':input:disabled').prop('disabled', false);
+                        alert('An error has occured.');
                     }
-                }
-            });
+                });
+            }
         });
 
         $('.books-result').on('change', '.book-checkbox', function () {

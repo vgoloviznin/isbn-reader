@@ -37,21 +37,26 @@ namespace Services.Books
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async void AddAsync(IList<Book> books)
+        public async Task<bool> AddAsync(IList<Book> books)
         {
             if (!books.Any())
             {
-                return;
+                return await Task.FromResult(false);
             }
 
             _context.Books.AddRange(books);
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<IList<Book>> GetAsync(IEnumerable<long> isbns)
         {
             return await _context.Books.Where(w => isbns.Contains(w.Isbn)).ToListAsync();
+        }
+
+        public async Task<IList<Book>> GetAsync()
+        {
+            return await _context.Books.ToListAsync();
         }
     }
 }
